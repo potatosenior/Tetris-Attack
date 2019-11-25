@@ -17,9 +17,10 @@ void cenario_desenha(Cenario* cen);
 StructGrade* criar_grade(int x, int y);
 void destruir_grade(StructGrade *grade);
 int grade_perdeu(StructGrade *grade);
-void grade_movimenta(StructGrade *grade, Cenario *cen);
+void grade_movimenta(StructGrade *grade, Cenario *cen, int direcao);
 void grade_desenha(StructGrade *grade);
 void grade_AlteraDirecao(StructGrade *grade, int direcao);
+void grade_mudar(Cenario *cen, StructGrade *gradee);
 
 //=========================================================
 Pacman* pacman_create(int x, int y);
