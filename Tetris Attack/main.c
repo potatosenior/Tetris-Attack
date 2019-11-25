@@ -24,8 +24,7 @@ void terminaJogo();
 int WINAPI WinMain(HINSTANCE hInstance,
                    HINSTANCE hPrevInstance,
                    LPSTR lpCmdLine,
-                   int nCmdShow)
-{
+                   int nCmdShow) {
     WNDCLASSEX wcex;
     HWND hwnd;
     HDC hDC;
@@ -55,12 +54,12 @@ int WINAPI WinMain(HINSTANCE hInstance,
     /* create main window */
     hwnd = CreateWindowEx(0,
                           "GLSample",
-                          "OpenGL Sample",
+                          "Tetris Attack",
                           WS_OVERLAPPEDWINDOW,
                           CW_USEDEFAULT,
                           CW_USEDEFAULT,
-                          600,  //largura
-                          700,  //altura
+                          800,
+                          800,
                           NULL,
                           NULL,
                           hInstance,
@@ -75,24 +74,17 @@ int WINAPI WinMain(HINSTANCE hInstance,
     iniciaJogo();
 
     /* program main loop */
-    while (!bQuit)
-    {
+    while (!bQuit) {
         /* check for messages */
-        if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-        {
+        if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
             /* handle or dispatch messages */
-            if (msg.message == WM_QUIT)
-            {
+            if (msg.message == WM_QUIT) {
                 bQuit = TRUE;
-            }
-            else
-            {
+            } else {
                 TranslateMessage(&msg);
                 DispatchMessage(&msg);
             }
-        }
-        else
-        {
+        } else {
             /* OpenGL animation code goes here */
 
             glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -124,59 +116,26 @@ int WINAPI WinMain(HINSTANCE hInstance,
     return msg.wParam;
 }
 // Função que verifica se o teclado foi pressionado
-LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-    switch (uMsg)
-    {
-        case WM_CLOSE:
-            PostQuitMessage(0);
-        break;
-
-        case WM_DESTROY:
-            return 0;
-
-        case WM_KEYDOWN:
-        {
-            switch (wParam)
-            {
-                case VK_ESCAPE: //Pressionou ESC?
-                    PostQuitMessage(0);
-                    break;
-                case VK_RIGHT: //Pressionou seta direita?
-                    //pacman_AlteraDirecao(pac,0,cen);
-                    grade_AlteraDirecao(gradee, 2);
-                    break;
-                case VK_DOWN: //Pressionou seta para baixo?
-                    //pacman_AlteraDirecao(pac,1,cen);
-                    grade_AlteraDirecao(gradee, 1);
-                    break;
-                case VK_LEFT: //Pressionou seta esquerda?
-                    //pacman_AlteraDirecao(pac,2,cen);
-                    grade_AlteraDirecao(gradee, 0);
-                    break;
-                case VK_UP: //Pressionou seta para cima?
-                    //pacman_AlteraDirecao(pac,3,cen);
-                    grade_AlteraDirecao(gradee, 3);
-                    break;
-                case VK_RETURN:  //ENTER
-                    grade_mudar(cen, gradee);
-                    break;
-                case VK_SPACE:
-                    grade_mudar(cen, gradee);
-                    break;
-            }
+LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+    if(uMsg == WM_CLOSE) PostQuitMessage(0);
+    else if(uMsg == WM_DESTROY) return 0;
+    else if(uMsg == WM_KEYDOWN){
+        if(wParam == VK_LEFT || wParam == 0x41){
+            grade_movimenta(gradee, cen, 0);
+        }else if(wParam == VK_DOWN || wParam == 0x53){
+            grade_movimenta(gradee, cen, 1);
+        }else if(wParam == VK_RIGHT || wParam == 0x44){
+            grade_movimenta(gradee, cen, 2);
+        }else if(wParam == VK_UP || wParam == 0x57){
+            grade_movimenta(gradee, cen, 3);
+        }else if(wParam == VK_RETURN || wParam == VK_SPACE){
+             grade_mudar(cen, gradee);
         }
-        break;
-
-        default:
-            return DefWindowProc(hwnd, uMsg, wParam, lParam);
-    }
-
-    return 0;
+    }else return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
+
 // Função que configura o OpenGL
-void EnableOpenGL(HWND hwnd, HDC* hDC, HGLRC* hRC)
-{
+void EnableOpenGL(HWND hwnd, HDC* hDC, HGLRC* hRC) {
     PIXELFORMATDESCRIPTOR pfd;
 
     int iFormat;
@@ -213,8 +172,7 @@ void EnableOpenGL(HWND hwnd, HDC* hDC, HGLRC* hRC)
 
 }
 
-void DisableOpenGL (HWND hwnd, HDC hDC, HGLRC hRC)
-{
+void DisableOpenGL (HWND hwnd, HDC hDC, HGLRC hRC) {
     wglMakeCurrent(NULL, NULL);
     wglDeleteContext(hRC);
     ReleaseDC(hwnd, hDC);
@@ -225,49 +183,23 @@ void DisableOpenGL (HWND hwnd, HDC hDC, HGLRC hRC)
 // ===================================================================
 
 // Função que desenha cada componente do jogo
-void desenhaJogo(){
+void desenhaJogo() {
     cenario_desenha(cen);
-    /*
-    if(pacman_vivo(pac)){
-        pacman_movimenta(pac, cen);
-        pacman_desenha(pac);
-        int i;
-        for(i=0; i<4; i++){
-            phantom_movimenta(ph[i], cen, pac);
-            phantom_desenha(ph[i]);
-        }
-    }
-    */
-    if(grade_perdeu(gradee) == 1)
-    {
-        grade_movimenta(gradee, cen);
+
+    if(grade_perdeu(gradee) == 1) {
         grade_desenha(gradee);
     }
 
 }
 // Função que inicia o mapa do jogo e as posições iniciais dos personagens
-void iniciaJogo(){
+void iniciaJogo() {
     srand(time(NULL));
-
     cen = cenario_carrega("mapa.txt");
-    /*
-
-    pac = pacman_create(9,11);
-    int i;
-    for(i=0; i<4; i++)
-        ph[i] = phantom_create(9,9);
-    */
-
     gradee = criar_grade(3, 8);
+    PlaySound(TEXT("Songs/TitleTheme.wav"), NULL, SND_ASYNC|SND_FILENAME|SND_LOOP);
 }
 // Função que libera os dados do jogo
-void terminaJogo(){
-    //int i;
-    /*
-    for(i=0; i<4; i++)
-        phantom_destroy(ph[i]);
-    pacman_destroy(pac);
-    */
+void terminaJogo() {
     cenario_destroy(cen);
     destruir_grade(gradee);
 }

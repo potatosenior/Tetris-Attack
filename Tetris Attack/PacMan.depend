@@ -152,3 +152,25 @@
 	"SOIL.h"
 	"pacman.h"
 
+1574703811 source:d:\kaioa\desktop\jogos\tetris attack\main.c
+	"SOIL.h"
+	<windows.h>
+	<gl/gl.h>
+	<stdio.h>
+	<time.h>
+	"pacman.h"
+
+1574694716 d:\kaioa\desktop\jogos\tetris attack\soil.h
+
+1574699940 d:\kaioa\desktop\jogos\tetris attack\pacman.h
+
+1574701916 source:d:\kaioa\desktop\jogos\tetris attack\pacman.c
+	<stdio.h>
+	<math.h>
+	<stdlib.h>
+	<windows.h>
+	<gl/gl.h>
+	<time.h>
+	"SOIL.h"
+	"pacman.h"
+
