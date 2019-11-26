@@ -3,18 +3,22 @@
 #include <gl/gl.h>
 #include <stdio.h>
 #include <time.h>
-#include "pacman.h"
+#include "tetris.h"
+
+// tempo para os blocos subirem
+#define TEMPO_SUBIR 5
 
 LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
 void EnableOpenGL(HWND hwnd, HDC*, HGLRC*);
 void DisableOpenGL(HWND, HDC, HGLRC);
 
-// Define as variáveis e funções que irão controlar o jogo
+// Define as variï¿½veis e funï¿½ï¿½es que irï¿½o controlar o jogo
 Cenario *cen;
-
 StructGrade *gradee;
 
-int musica = 0;
+int musica = 0; //variavel pra pausar a musica
+int konamiEasterEgg = 0; // Easter Egg, ao atingir 10 ï¿½ ativado!
+time_t lastTimer, actualTimer, startTimer, auxTimer;
 
 void desenhaJogo();
 void iniciaJogo();
@@ -23,8 +27,10 @@ void desenhaFundo();
 void desenhaPlacar();
 void desenhaMaiorPlacar();
 void maior_pontuacao_desenha();
+void updateEasterEgg();
+int tempo();
 
-//funçao que cria e configura a janela de desenho OpenGL
+//funï¿½ao que cria e configura a janela de desenho OpenGL
 int WINAPI WinMain(HINSTANCE hInstance,
                    HINSTANCE hPrevInstance,
                    LPSTR lpCmdLine,
@@ -74,8 +80,10 @@ int WINAPI WinMain(HINSTANCE hInstance,
     /* enable OpenGL for the window */
     EnableOpenGL(hwnd, &hDC, &hRC);
 
-    // Chama a função que inicializa o jogo
+    // Chama a funï¿½ï¿½o que inicializa o jogo
     iniciaJogo();
+    printf("Apos inicia jogo!");
+
 
     /* program main loop */
     while (!bQuit) {
@@ -95,7 +103,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
             glClear(GL_COLOR_BUFFER_BIT);
 
             glPushMatrix();
-            // Esse laço controla cada frame do jogo.
+            // Esse laï¿½o controla cada frame do jogo.
 
             // Desenhar o jogo aqui
             desenhaJogo();
@@ -104,9 +112,15 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
             SwapBuffers(hDC);
         }
+        printf("Em funcoes de tempo!");
+        actualTimer = time(NULL);
+        if(actualTimer - lastTimer == TEMPO_SUBIR){ // Timer para adicionar uma nova linha
+            adicionar_linha(cen, gradee);
+            lastTimer = time(NULL);
+        }
     }
-    // Saiu do laço que desenha os frames?
-    // Então o jogo acabou.
+    // Saiu do laï¿½o que desenha os frames?
+    // Entï¿½o o jogo acabou.
     terminaJogo();
 
     /* shutdown OpenGL */
@@ -118,12 +132,14 @@ int WINAPI WinMain(HINSTANCE hInstance,
     return msg.wParam;
 }
 
-// Função que verifica se o teclado foi pressionado
+// Funï¿½ï¿½o que verifica se o teclado foi pressionado
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     if(uMsg == WM_CLOSE) PostQuitMessage(0);
     else if(uMsg == WM_DESTROY) return 0;
     else if(uMsg == WM_KEYDOWN){
-        if(wParam == VK_LEFT || wParam == 0x41){
+        if(wParam == VK_ESCAPE || wParam == VK_DELETE){    //Pressionou ESC
+            PostQuitMessage(0);
+        }else if(wParam == VK_LEFT || wParam == 0x41){
             grade_movimenta(gradee, cen, 0);
         }else if(wParam == VK_DOWN || wParam == 0x53){
             grade_movimenta(gradee, cen, 1);
@@ -144,7 +160,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
     return 0;
 }
 
-// Função que configura o OpenGL
+// Funï¿½ï¿½o que configura o OpenGL
 void EnableOpenGL(HWND hwnd, HDC* hDC, HGLRC* hRC) {
     PIXELFORMATDESCRIPTOR pfd;
 
@@ -174,7 +190,7 @@ void EnableOpenGL(HWND hwnd, HDC* hDC, HGLRC* hRC) {
 
     wglMakeCurrent(*hDC, *hRC);
 
-    // Chama a função que carrega as texturas do jogo
+    // Chama a funï¿½ï¿½o que carrega as texturas do jogo
     carregaTexturas();
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR); // Linear Filtering
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR); // Linear Filtering
@@ -189,33 +205,68 @@ void DisableOpenGL (HWND hwnd, HDC hDC, HGLRC hRC) {
 }
 
 // ===================================================================
-// Funções que controlam e desenham o jogo
+// Funï¿½ï¿½es que controlam e desenham o jogo
 // ===================================================================
 
-// Função que desenha cada componente do jogo
+// Funï¿½ï¿½o que desenha cada componente do jogo
 void desenhaJogo() {
     cenario_desenha(cen);
     pontuacao_desenha(gradee);
     maior_pontuacao_desenha(gradee);
-    tempo_desenha(gradee, 78);
+    tempo_desenha(tempo());
 
     if(grade_perdeu(gradee) == 1) {
         grade_desenha(gradee);
     }
 
 }
-// Função que inicia o mapa do jogo e as posições iniciais dos personagens
+// Funï¿½ï¿½o que inicia o mapa do jogo e as posiï¿½ï¿½es iniciais dos personagens
 void iniciaJogo() {
-
+    printf("Em inicia jogo!\n");
+    startTimer = time(NULL);
+    lastTimer = time(NULL);
     gradee = criar_grade(2, 9);
     Carregar_high_score(gradee);
     srand(time(NULL));
     cen = cenario_carrega();
     PlaySound(TEXT("Songs/TitleTheme.wav"), NULL, SND_ASYNC|SND_FILENAME|SND_LOOP);
 }
-// Função que libera os dados do jogo
+// Funï¿½ï¿½o que libera os dados do jogo
 void terminaJogo() {
+    printf("Em termina jogo!");
     Salvar_high_score(gradee);
     cenario_destroy(cen);
     destruir_grade(gradee);
+}
+// ===================================================================
+// Funï¿½ao relogio
+// ===================================================================
+
+int tempo(){
+    auxTimer = time(NULL);
+    return auxTimer - startTimer;
+}
+
+// ===================================================================
+// Funï¿½ï¿½es easter egg
+// ===================================================================
+
+void updateEasterEgg(WPARAM key){
+    if(key == VK_UP && (konamiEasterEgg == 0 || konamiEasterEgg == 1)){
+        konamiEasterEgg++;
+    }else if(key == VK_DOWN && (konamiEasterEgg == 2 || konamiEasterEgg == 3)){
+        konamiEasterEgg++;
+    }else if(key == VK_LEFT && (konamiEasterEgg == 4 || konamiEasterEgg == 6)){
+        konamiEasterEgg++;
+    }else if(key == VK_RIGHT && (konamiEasterEgg == 5 || konamiEasterEgg == 7)){
+        konamiEasterEgg++;
+    }else if(key == 0x41 && konamiEasterEgg == 8){
+        konamiEasterEgg++;
+    }else if(key == 0x42 && konamiEasterEgg == 9){
+        konamiEasterEgg++;
+    }else konamiEasterEgg = 0;
+
+    if(konamiEasterEgg == 10){
+        PlaySound(TEXT("Songs/chatuba.wav"), NULL, SND_ASYNC|SND_FILENAME|SND_LOOP);
+    }
 }

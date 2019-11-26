@@ -1,0 +1,45 @@
+# depslib dependency file v1.0
+1574779102 source:c:\users\marco antonio\desktop\tetris attack\main.c
+	"SOIL.h"
+	<windows.h>
+	<gl/gl.h>
+	<stdio.h>
+	<time.h>
+	"tetris.h"
+
+1574740082 c:\users\marco antonio\desktop\tetris attack\soil.h
+
+1574774680 c:\users\marco antonio\desktop\tetris attack\tetris.h
+
+1574780906 source:c:\users\marco antonio\desktop\tetris attack\tetris.c
+	<stdio.h>
+	<math.h>
+	<stdlib.h>
+	<windows.h>
+	<gl/gl.h>
+	<time.h>
+	"SOIL.h"
+	"tetris.h"
+
+1574797300 source:c:\users\joao\documents\tetris attack\tetris attack\tetris.c
+	<stdio.h>
+	<math.h>
+	<stdlib.h>
+	<windows.h>
+	<gl/gl.h>
+	<time.h>
+	"SOIL.h"
+	"tetris.h"
+
+1574740082 c:\users\joao\documents\tetris attack\tetris attack\soil.h
+
+1574797113 c:\users\joao\documents\tetris attack\tetris attack\tetris.h
+
+1574797201 source:c:\users\joao\documents\tetris attack\tetris attack\main.c
+	"SOIL.h"
+	<windows.h>
+	<gl/gl.h>
+	<stdio.h>
+	<time.h>
+	"tetris.h"
+
