@@ -10,15 +10,19 @@ void EnableOpenGL(HWND hwnd, HDC*, HGLRC*);
 void DisableOpenGL(HWND, HDC, HGLRC);
 
 // Define as variáveis e funções que irão controlar o jogo
-Pacman *pac;
 Cenario *cen;
-Phantom *ph[4];
 
 StructGrade *gradee;
+
+int musica = 0;
 
 void desenhaJogo();
 void iniciaJogo();
 void terminaJogo();
+void desenhaFundo();
+void desenhaPlacar();
+void desenhaMaiorPlacar();
+void maior_pontuacao_desenha();
 
 //funçao que cria e configura a janela de desenho OpenGL
 int WINAPI WinMain(HINSTANCE hInstance,
@@ -58,8 +62,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
                           WS_OVERLAPPEDWINDOW,
                           CW_USEDEFAULT,
                           CW_USEDEFAULT,
-                          800,
-                          800,
+                          800,  //largura
+                          800,  //altura
                           NULL,
                           NULL,
                           hInstance,
@@ -99,8 +103,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
             glPopMatrix();
 
             SwapBuffers(hDC);
-
-            Sleep(10);
         }
     }
     // Saiu do laço que desenha os frames?
@@ -115,6 +117,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
     return msg.wParam;
 }
+
 // Função que verifica se o teclado foi pressionado
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     if(uMsg == WM_CLOSE) PostQuitMessage(0);
@@ -130,8 +133,15 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             grade_movimenta(gradee, cen, 3);
         }else if(wParam == VK_RETURN || wParam == VK_SPACE){
              grade_mudar(cen, gradee);
+        }else if(wParam == VK_CONTROL){
+             Alterar_score(gradee, 150); Alterar_high_score_grade(gradee, 150);
+        }else if(wParam == 0x4D){
+             if(musica) PlaySound(NULL, NULL, SND_ASYNC|SND_FILENAME|SND_LOOP);
+             else PlaySound(TEXT("Songs/TitleTheme.wav"), NULL, SND_ASYNC|SND_FILENAME|SND_LOOP);
+             musica = !musica;
         }
     }else return DefWindowProc(hwnd, uMsg, wParam, lParam);
+    return 0;
 }
 
 // Função que configura o OpenGL
@@ -185,6 +195,9 @@ void DisableOpenGL (HWND hwnd, HDC hDC, HGLRC hRC) {
 // Função que desenha cada componente do jogo
 void desenhaJogo() {
     cenario_desenha(cen);
+    pontuacao_desenha(gradee);
+    maior_pontuacao_desenha(gradee);
+    tempo_desenha(gradee, 78);
 
     if(grade_perdeu(gradee) == 1) {
         grade_desenha(gradee);
@@ -193,13 +206,16 @@ void desenhaJogo() {
 }
 // Função que inicia o mapa do jogo e as posições iniciais dos personagens
 void iniciaJogo() {
+
+    gradee = criar_grade(2, 9);
+    Carregar_high_score(gradee);
     srand(time(NULL));
-    cen = cenario_carrega("mapa.txt");
-    gradee = criar_grade(3, 8);
+    cen = cenario_carrega();
     PlaySound(TEXT("Songs/TitleTheme.wav"), NULL, SND_ASYNC|SND_FILENAME|SND_LOOP);
 }
 // Função que libera os dados do jogo
 void terminaJogo() {
+    Salvar_high_score(gradee);
     cenario_destroy(cen);
     destruir_grade(gradee);
 }
