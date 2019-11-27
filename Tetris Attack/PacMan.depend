@@ -1,40 +1,39 @@
 # depslib dependency file v1.0
-1548079874 source:d:\pacman\main.c
+1548079874 source:d:\tetris\main.c
 	"SOIL.h"
 	<windows.h>
 	<gl/gl.h>
 	<stdio.h>
 	<time.h>
-	"pacman.h"
+	"tetris.h"
 
-1215465208 d:\pacman\soil.h
+1215465208 d:\tetris\soil.h
 
-1547222593 source:d:\andre\pacman\main.c
-	"SOIL.h"
-	<windows.h>
-	<gl/gl.h>
-	<stdio.h>
-	"mapa.txt"
-
-1215465208 d:\andre\pacman\soil.h
-
-1547219672 d:\andre\pacman\mapa.txt
-
-1547637083 d:\pacman\mapa.txt
-
-1547550409 d:\pacman\utils.h
+1547222593 source:d:\andre\tetris\main.c
 	"SOIL.h"
 	<windows.h>
 	<gl/gl.h>
 	<stdio.h>
 
-1547550687 source:d:\pacman\utils.c
+1215465208 d:\andre\tetris\soil.h
+
+1547219672 d:\andre\tetris\mapa.txt
+
+1547637083 d:\tetris\mapa.txt
+
+1547550409 d:\tetris\utils.h
+	"SOIL.h"
+	<windows.h>
+	<gl/gl.h>
+	<stdio.h>
+
+1547550687 source:d:\tetris\utils.c
 	"utils.h"
 
-1548079156 source:d:\pacman\pacman.c
-	"pacman.h"
+1548079156 source:d:\tetris\tetris.c
+	"tetris.h"
 
-1548079162 d:\pacman\pacman.h
+1548079162 d:\tetris\tetris.h
 	<stdio.h>
 	<math.h>
 	<stdlib.h>
@@ -42,107 +41,85 @@
 	<gl/gl.h>
 	"SOIL.h"
 
-1548088687 source:d:\andre\levar ufu\pacman\main.c
+1548088687 source:d:\andre\levar ufu\tetris\main.c
 	"SOIL.h"
 	<windows.h>
 	<gl/gl.h>
 	<stdio.h>
 	<time.h>
-	"pacman.h"
+	"tetris.h"
 
-1215465208 d:\andre\levar ufu\pacman\soil.h
+1215465208 d:\andre\levar ufu\tetris\soil.h
 
-1547546809 d:\andre\levar ufu\pacman\utils.h
+1547546809 d:\andre\levar ufu\tetris\utils.h
 	"SOIL.h"
 	<windows.h>
 	<gl/gl.h>
 	<stdio.h>
 
-1547547087 source:d:\andre\levar ufu\pacman\utils.c
+1547547087 source:d:\andre\levar ufu\tetris\utils.c
 	"utils.h"
 
-1547633483 d:\andre\levar ufu\pacman\mapa.txt
+1547633483 d:\andre\levar ufu\tetris\mapa.txt
 
-1548171863 source:d:\andre\levar ufu\pacman\pacman.c
+1548171863 source:d:\andre\levar ufu\tetris\tetris.c
 	<stdio.h>
 	<math.h>
 	<stdlib.h>
 	<windows.h>
 	<gl/gl.h>
 	"SOIL.h"
-	"pacman.h"
+	"tetris.h"
 
-1548170362 d:\andre\levar ufu\pacman\pacman.h
+1548170362 d:\andre\levar ufu\tetris\tetris.h
 
-1548334521 source:d:\facomufu\video aulas\video aula pacman\pacman\main.c
+1548334521 source:d:\facomufu\video aulas\video aula tetris\tetris\main.c
 	"SOIL.h"
 	<windows.h>
 	<gl/gl.h>
 	<stdio.h>
 	<time.h>
-	"pacman.h"
+	"tetris.h"
 
-1215465208 d:\facomufu\video aulas\video aula pacman\pacman\soil.h
+1215465208 d:\facomufu\video aulas\video aula tetris\tetris\soil.h
 
-1548173962 d:\facomufu\video aulas\video aula pacman\pacman\pacman.h
+1548173962 d:\facomufu\video aulas\video aula tetris\tetris\tetris.h
 
-1548334616 source:d:\facomufu\video aulas\video aula pacman\pacman\pacman.c
+1548334616 source:d:\facomufu\video aulas\video aula tetris\tetris\tetris.c
 	<stdio.h>
 	<math.h>
 	<stdlib.h>
 	<windows.h>
 	<gl/gl.h>
 	"SOIL.h"
-	"pacman.h"
+	"tetris.h"
 
-1548327416 source:d:\andre\facom ufu\exemplos\pacman\pacman.c
+1548327416 source:d:\andre\facom ufu\exemplos\tetris\tetris.c
 	<stdio.h>
 	<math.h>
 	<stdlib.h>
 	<windows.h>
 	<gl/gl.h>
 	"SOIL.h"
-	"pacman.h"
+	"tetris.h"
 
-1215461608 d:\andre\facom ufu\exemplos\pacman\soil.h
+1215461608 d:\andre\facom ufu\exemplos\tetris\soil.h
 
-1548166762 d:\andre\facom ufu\exemplos\pacman\pacman.h
+1548166762 d:\andre\facom ufu\exemplos\tetris\tetris.h
 
-1574623341 source:c:\users\joao\documents\pacman\main.c
+1574623341 source:c:\users\joao\documents\tetris\main.c
 	"SOIL.h"
 	<windows.h>
 	<gl/gl.h>
 	<stdio.h>
 	<time.h>
-	"pacman.h"
+	"tetris.h"
 
-1215461608 c:\users\joao\documents\pacman\soil.h
+1215461608 c:\users\joao\documents\tetris\soil.h
 
-1574621636 c:\users\joao\documents\pacman\pacman.h
+1574621636 c:\users\joao\documents\tetris\tetris.h
 
-1574623446 source:c:\users\joao\documents\pacman\pacman.c
-	<stdio.h>
-	<math.h>
-	<stdlib.h>
-	<windows.h>
-	<gl/gl.h>
-	<time.h>
-	"SOIL.h"
-	"pacman.h"
-
-1574691035 source:c:\users\marco antonio\documents\tetriszada\tetris-attack-master\pacman\main.c
-	"SOIL.h"
-	<windows.h>
-	<gl/gl.h>
-	<stdio.h>
-	<time.h>
-	"pacman.h"
-
-1574685085 c:\users\marco antonio\documents\tetriszada\tetris-attack-master\pacman\soil.h
-
-1574685085 c:\users\marco antonio\documents\tetriszada\tetris-attack-master\pacman\pacman.h
-
-1574691017 source:c:\users\marco antonio\documents\tetriszada\tetris-attack-master\pacman\pacman.c
+1574623446 source:c:\users\joao\documents\tetris\tetris.c
 	<stdio.h>
 	<math.h>
 	<stdlib.h>
@@ -150,7 +127,29 @@
 	<gl/gl.h>
 	<time.h>
 	"SOIL.h"
-	"pacman.h"
+	"tetris.h"
+
+1574691035 source:c:\users\marco antonio\documents\tetriszada\tetris-attack-master\tetris\main.c
+	"SOIL.h"
+	<windows.h>
+	<gl/gl.h>
+	<stdio.h>
+	<time.h>
+	"tetris.h"
+
+1574685085 c:\users\marco antonio\documents\tetriszada\tetris-attack-master\tetris\soil.h
+
+1574685085 c:\users\marco antonio\documents\tetriszada\tetris-attack-master\tetris\tetris.h
+
+1574691017 source:c:\users\marco antonio\documents\tetriszada\tetris-attack-master\tetris\tetris.c
+	<stdio.h>
+	<math.h>
+	<stdlib.h>
+	<windows.h>
+	<gl/gl.h>
+	<time.h>
+	"SOIL.h"
+	"tetris.h"
 
 1574709968 source:d:\kaioa\desktop\jogos\tetris attack\main.c
 	"SOIL.h"
@@ -158,13 +157,13 @@
 	<gl/gl.h>
 	<stdio.h>
 	<time.h>
-	"pacman.h"
+	"tetris.h"
 
 1574694716 d:\kaioa\desktop\jogos\tetris attack\soil.h
 
-1574699940 d:\kaioa\desktop\jogos\tetris attack\pacman.h
+1574699940 d:\kaioa\desktop\jogos\tetris attack\tetris.h
 
-1574709911 source:d:\kaioa\desktop\jogos\tetris attack\pacman.c
+1574709911 source:d:\kaioa\desktop\jogos\tetris attack\tetris.c
 	<stdio.h>
 	<math.h>
 	<stdlib.h>
@@ -172,7 +171,7 @@
 	<gl/gl.h>
 	<time.h>
 	"SOIL.h"
-	"pacman.h"
+	"tetris.h"
 
 1574738395 source:c:\users\joao\documents\tetris attack\tetris attack\main.c
 	"SOIL.h"
@@ -180,13 +179,13 @@
 	<gl/gl.h>
 	<stdio.h>
 	<time.h>
-	"pacman.h"
+	"tetris.h"
 
 1574694716 c:\users\joao\documents\tetris attack\tetris attack\soil.h
 
-1574737033 c:\users\joao\documents\tetris attack\tetris attack\pacman.h
+1574737033 c:\users\joao\documents\tetris attack\tetris attack\tetris.h
 
-1574739580 source:c:\users\joao\documents\tetris attack\tetris attack\pacman.c
+1574739580 source:c:\users\joao\documents\tetris attack\tetris attack\tetris.c
 	<stdio.h>
 	<math.h>
 	<stdlib.h>
@@ -194,5 +193,27 @@
 	<gl/gl.h>
 	<time.h>
 	"SOIL.h"
-	"pacman.h"
+	"tetris.h"
+
+1574769296 source:c:\users\marco antonio\desktop\tetris attack\main.c
+	"SOIL.h"
+	<windows.h>
+	<gl/gl.h>
+	<stdio.h>
+	<time.h>
+	"tetris.h"
+
+1574740082 c:\users\marco antonio\desktop\tetris attack\soil.h
+
+1574740082 c:\users\marco antonio\desktop\tetris attack\tetris.h
+
+1574770467 source:c:\users\marco antonio\desktop\tetris attack\tetris.c
+	<stdio.h>
+	<math.h>
+	<stdlib.h>
+	<windows.h>
+	<gl/gl.h>
+	<time.h>
+	"SOIL.h"
+	"tetris.h"
 
