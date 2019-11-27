@@ -82,8 +82,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
     // Chama a fun��o que inicializa o jogo
     iniciaJogo();
-    printf("Apos inicia jogo!");
-
+    startTimer = time(NULL);
+    lastTimer = time(NULL);
 
     /* program main loop */
     while (!bQuit) {
@@ -112,7 +112,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
             SwapBuffers(hDC);
         }
-        printf("Em funcoes de tempo!");
         actualTimer = time(NULL);
         if(actualTimer - lastTimer == TEMPO_SUBIR){ // Timer para adicionar uma nova linha
             adicionar_linha(cen, gradee);
@@ -128,6 +127,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
     /* destroy the window explicitly */
     DestroyWindow(hwnd);
+    fflush(stdin);
 
     return msg.wParam;
 }
@@ -222,9 +222,7 @@ void desenhaJogo() {
 }
 // Fun��o que inicia o mapa do jogo e as posi��es iniciais dos personagens
 void iniciaJogo() {
-    printf("Em inicia jogo!\n");
-    startTimer = time(NULL);
-    lastTimer = time(NULL);
+
     gradee = criar_grade(2, 9);
     Carregar_high_score(gradee);
     srand(time(NULL));
@@ -233,7 +231,6 @@ void iniciaJogo() {
 }
 // Fun��o que libera os dados do jogo
 void terminaJogo() {
-    printf("Em termina jogo!");
     Salvar_high_score(gradee);
     cenario_destroy(cen);
     destruir_grade(gradee);

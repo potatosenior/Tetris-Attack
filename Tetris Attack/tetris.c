@@ -17,8 +17,8 @@
 #define C 6
 
 // Tamanho de cada bloco da matriz do jogo na tela
-#define TAM 0.1f
-#define TAMF 1.56f              // tamanho da imagem de fundo
+#define TAM 0.15f
+#define TAMF 2.0f              // tamanho da imagem de fundo 1.56f
 
 #define TAMS 0.06f              // tamanho do placar
 #define TAMIPV 0.10f             // tamanho da img do placar vertical
@@ -29,9 +29,10 @@
 
 #define TAMITV 0.10f             // tamanho da img do tempo vertical
 #define TAMITH 0.27f             // tamanho da img do tempo horizontalmente
-
-#define centro 0.5375f          // alinhar matriz com o fundo horizontalmente
+                //0.5375f   0.57f   -0.1f
+#define centro 0.5375f           // alinhar matriz com o fundo horizontalmente
 #define centro_vertical 0.57f   // alinhar matriz com o fundo vertical
+#define espacos 0.5f
 
 //Fun��es que convertem a linha e coluna da matriz em uma coordenada de [-1,1]
 #define MAT2X(j) ((j)*0.1f-1)
@@ -122,13 +123,15 @@ static GLuint carregaArqTextura(char *str) {
 
 // Fun��o que recebe uma linha e coluna da matriz e um c�digo
 // de textura e desenha um quadrado na tela com essa textura
-void desenhaSprite(float coluna,float linha, GLuint tex) {
+void desenhaSprite(float col,float linha, GLuint tex) {
     glColor3f(1.0, 1.0, 1.0);
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, tex);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    float coluna = col;
 
     glBegin(GL_QUADS);
         glTexCoord2f(0.0f,0.0f); glVertex2f(coluna+centro, linha-centro_vertical);
@@ -292,7 +295,7 @@ void desenhaImagemTempo(GLuint tex, float col){
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     float lin;
-    lin = 0.30f;
+    lin = 0.67f;
 
     glBegin(GL_QUADS);
         glTexCoord2f(0.0f,0.0f); glVertex2f(col, lin);
@@ -310,7 +313,6 @@ void desenhaImagemTempo(GLuint tex, float col){
 
 // Fun��o que carrega os dados da matriz
 Cenario* cenario_carrega() {
-    printf("Em cenario carrega!\n");
     int i,j, num;
     Cenario* cen = malloc(sizeof(Cenario));
 
@@ -333,9 +335,8 @@ void cenario_destroy(Cenario* cen) {
 
 // Percorre a matriz do jogo desenhando os sprites
 void cenario_desenha(Cenario* cen) {
-    printf("Em cenario desenha!\n");
     int i,j;
-    float espaco = 0.0;
+    float espaco = 0.0, vertical = -6.5;
     srand(time(NULL));
 
     desenhaFundo(fundo);
@@ -343,20 +344,21 @@ void cenario_desenha(Cenario* cen) {
     for(i=0; i<L; i++){
         for(j=0; j<C; j++) {
             if(cen->mapa[i][j] != preto){
-                desenhaSprite(MAT2X(j+espaco),MAT2Y(i),cristais[cen->mapa[i][j]]);
-                espaco += 0.5;
+                desenhaSprite(MAT2X(j+espaco),MAT2Y(i+vertical),cristais[cen->mapa[i][j]]);
+                espaco += espacos;
             }
+            
         }
     espaco = 0.0;
+    vertical += espacos;
     }
 }
 
 void pontuacao_desenha(StructGrade *gradee){
-    printf("Em pontuacao desenha!\n");
     int num[5], pontuacao;
     char numeros[5];
     pontuacao = gradee->pontuacao;
-    float espacamento = 5.0;
+    float espacamento = 1.0;
 
     itoa(pontuacao, numeros, 10);
 
@@ -369,15 +371,14 @@ void pontuacao_desenha(StructGrade *gradee){
             espacamento += 0.5;
         }
     }
-    desenhaImagemPlacar(imagens[1], MAT2Y(7.15) );
+    desenhaImagemPlacar(imagens[1], MAT2Y(3.15) );
 }
 
 void maior_pontuacao_desenha(StructGrade *gradee){
-    printf("Em maior pontuacao desenha!\n");
     int num[5], pontuacao;//, resto;
     char numeros[5];
     pontuacao = gradee->highscore;
-    float espacamento = 5.0;
+    float espacamento = 1.0;
     //printf("highscore = %d\n", pontuacao);
 
     itoa(pontuacao, numeros, 10);
@@ -397,11 +398,10 @@ void maior_pontuacao_desenha(StructGrade *gradee){
             espacamento += 0.5;
         }
     }
-    desenhaImagemMaiorPlacar(imagens[0], MAT2Y(7.15));
+    desenhaImagemMaiorPlacar(imagens[0], MAT2Y(3.15));
 }
 
 void tempo_desenha(int temp){
-    printf("Em tempo desenha!\n");
     int num[5], tempo;
     tempo = temp;
     //printf("time = %d\n", tempo);
@@ -417,15 +417,14 @@ void tempo_desenha(int temp){
     {
         //printf("num[%i] = %d\n", i, num[i]);
         if(num[i]>=0)
-            desenhaTempo(score[num[i]],MAT2Y(espacamento), 0.235f);
+            desenhaTempo(score[num[i]],MAT2Y(espacamento), 0.6f);
         espacamento += 0.5;
     }
-    desenhaImagemTempo(imagens[2], MAT2Y(17.9));
+    desenhaImagemTempo(imagens[2], MAT2Y(17.6));
 }
 
 //Adiciona uma linha e sobe as demais
 void adicionar_linha(Cenario *cen, StructGrade *gradee){
-    printf("Em adicionar linha!\n");
     for(int i = 0; i < 14; ++i){
         for(int j = 0; j < 6; ++j){
             int cristal =  cen->mapa[i][j];
@@ -441,11 +440,14 @@ void adicionar_linha(Cenario *cen, StructGrade *gradee){
 
     for(int i = 0; i < 6; ++i){
         int num = rand() % 5;
+        //if(i > 1)
+        //    while(num == cen->mapa[13][i-2] && num == cen->mapa[13][i-1])//impede de ter 3 iguais na mesma linha
+        //        num = rand() % 5;
         cen->mapa[13][i] = num;
     }
 }
 
-/*
+
 void updateCristais(Cenario *cen){
     int sequencia = 1;
     int inicial = -1;
@@ -471,14 +473,12 @@ void updateCristais(Cenario *cen){
         }
     }
 }
-*/
 //==============================================================
 // Grade
 //==============================================================
 
 //inicializa a grade
 StructGrade* criar_grade(int x, int y) {
-    printf("Em criar grade!\n");
     StructGrade* grade = malloc(sizeof(StructGrade));
     if(grade !=NULL) {
         grade->x = x;
@@ -492,19 +492,16 @@ StructGrade* criar_grade(int x, int y) {
 
 //destruir a grade
 void destruir_grade(StructGrade *gradee) {
-    printf("Em destruir grade!\n");
     free(gradee);
 }
 
 // Alterar highscore da grade
 void Alterar_high_score_grade(StructGrade *gradee, int scoree){
-    printf("Em alterar highscore!\n");
     gradee->highscore += scoree;
 }
 
 // Alterar score atual
 void Alterar_score(StructGrade *gradee, int scoree){
-    printf("Em alterar score!\n");
     gradee->pontuacao += scoree;
 }
 
@@ -544,7 +541,6 @@ void Carregar_high_score(StructGrade *gradee){
     f = fopen("highscore.bin", "rb");
 
     if (f == NULL){ //nao tem nenhum salvo
-        printf("sem recordes salvo!\n");
         record = 0;
     }
     else
@@ -560,7 +556,6 @@ void Carregar_high_score(StructGrade *gradee){
 
 // Verifica se o jogador ja perdeu
 int grade_perdeu(StructGrade *gradee) {
-    printf("Em grade perdeu!\n");
     if (gradee->status == 1) return 1;
     else return 0;
 }
@@ -601,11 +596,10 @@ void grade_desenha(StructGrade *gradee) {
 
     if(gradee->status == 1) {
         desenhaSprite(MAT2X(coluna),MAT2Y(linha), grade);
-        desenhaSprite(MAT2X(coluna+1),MAT2Y(linha), grade);
+        desenhaSprite(MAT2X(coluna+1+espacos),MAT2Y(linha), grade);
     }
 }
 
 void grade_morre(StructGrade *gradee) {
-    printf("Em grade morre!\n");
     if(gradee->status == 1) gradee->status = 0;
 }
