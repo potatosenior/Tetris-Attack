@@ -1,3 +1,10 @@
+/*
+Grupo JKL
+Integrantes:
+João Pedro de Oliveira Martins - 11921BCC017
+Kaio Augusto de Souza - matrícula
+Luis Gustavo Seiji Tateish - matrícula
+*/
 #include "SOIL.h"
 #include <windows.h>
 #include <gl/gl.h>
@@ -6,7 +13,7 @@
 #include "pacman.h"
 
 // tempo para os blocos subirem
-#define TEMPO_SUBIR 5
+#define TEMPO_SUBIR 6
 
 LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
 void EnableOpenGL(HWND hwnd, HDC*, HGLRC*);
@@ -16,9 +23,10 @@ void DisableOpenGL(HWND, HDC, HGLRC);
 Cenario *cen;
 StructGrade *gradee;
 
-int musica = 0; //variavel pra pausar a musica
+int musica = 0; //variavel pra pausar a musica | 0 - tocando | 1 - pausada
+int pause = 0;  //variavel pra pausar o jogo
 int konamiEasterEgg = 0; // Easter Egg, ao atingir 10 � ativado!
-time_t lastTimer, actualTimer, startTimer, auxTimer;
+time_t lastTimer, actualTimer, startTimer, auxTimer, timer_congelado;
 
 void desenhaJogo();
 void iniciaJogo();
@@ -114,10 +122,15 @@ int WINAPI WinMain(HINSTANCE hInstance,
             SwapBuffers(hDC);
         }
         actualTimer = time(NULL);
-        if(actualTimer - lastTimer == TEMPO_SUBIR && grade_perdeu(gradee, cen) == 1){ // Timer para adicionar uma nova linha
-            adicionar_linha(cen, gradee);
+        //printf("Actual timer - last timer -> %d - %d = %d\n", actualTimer, lastTimer, actualTimer-lastTimer);
+        if(actualTimer - lastTimer == TEMPO_SUBIR){ // Timer para adicionar uma nova linha
+            //printf("valor de pause = %d - ", pause);
+            if(grade_perdeu(gradee, cen) == 1 && pause == 0)
+                adicionar_linha(cen, gradee);
             lastTimer = time(NULL);
         }
+        if(grade_perdeu(gradee, cen) == 1 && pause == 0)
+            timer_congelado = time(NULL);
     }
     // Saiu do la�o que desenha os frames?
     // Ent�o o jogo acabou.
@@ -135,29 +148,54 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 // Fun��o que verifica se o teclado foi pressionado
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-    if(uMsg == WM_CLOSE) PostQuitMessage(0);
-    else if(uMsg == WM_DESTROY) return 0;
-    else if(uMsg == WM_KEYDOWN && grade_perdeu(gradee, cen) == 1){
-        if(wParam == VK_ESCAPE || wParam == VK_DELETE){    //Pressionou ESC
-            PostQuitMessage(0);
-        }else if(wParam == VK_LEFT || wParam == 0x41){
-            grade_movimenta(gradee, cen, 0);
-        }else if(wParam == VK_DOWN || wParam == 0x53){
-            grade_movimenta(gradee, cen, 1);
-        }else if(wParam == VK_RIGHT || wParam == 0x44){
-            grade_movimenta(gradee, cen, 2);
-        }else if(wParam == VK_UP || wParam == 0x57){
-            grade_movimenta(gradee, cen, 3);
-        }else if(wParam == VK_RETURN || wParam == VK_SPACE){
-             grade_mudar(cen, gradee);
-        }else if(wParam == VK_CONTROL){
-             Alterar_score(gradee, 150); Alterar_high_score_grade(gradee, 150);
-        }else if(wParam == 0x4D){
-             if(musica) PlaySound(NULL, NULL, SND_ASYNC|SND_FILENAME|SND_LOOP);
-             else PlaySound(TEXT("Songs/TitleTheme.wav"), NULL, SND_ASYNC|SND_FILENAME|SND_LOOP);
-             musica = !musica;
-        }
-    }else return DefWindowProc(hwnd, uMsg, wParam, lParam);
+    if(uMsg == WM_CLOSE) 
+        PostQuitMessage(0);
+    else 
+        if(uMsg == WM_DESTROY) 
+            return 0;
+        else 
+            if(uMsg == WM_KEYDOWN && grade_perdeu(gradee, cen) == 1){
+                if(wParam == VK_ESCAPE || wParam == VK_DELETE){    //Pressionou ESC
+                    PostQuitMessage(0);
+                }else if(wParam == 0x50){   //Pressionou P e pausa/despausa o jogo
+                    if(pause == 0){
+                        pause = 1; printf("jogo pausado!\n");
+                    }
+                    else{
+                        pause = 0; printf("jogo retomado!\n");
+                    }
+                }else if(wParam == VK_LEFT || wParam == 0x41){
+                    if(pause == 0)
+                    grade_movimenta(gradee, cen, 0);
+                }else if(wParam == VK_DOWN || wParam == 0x53){
+                    if(pause == 0)
+                    grade_movimenta(gradee, cen, 1);
+                }else if(wParam == VK_RIGHT || wParam == 0x44){
+                    if(pause == 0)
+                    grade_movimenta(gradee, cen, 2);
+                }else if(wParam == VK_UP || wParam == 0x57){
+                    if(pause == 0)
+                    grade_movimenta(gradee, cen, 3);
+                }else if(wParam == VK_RETURN || wParam == VK_SPACE){
+                    if(pause == 0)
+                    grade_mudar(cen, gradee);
+                }else if(wParam == VK_CONTROL){
+                    Alterar_score(gradee, 150); Alterar_high_score_grade(gradee, 150);
+                }else if(wParam == 0x4D){
+                    if(musica == 0){ 
+                        PlaySound(NULL, NULL, SND_ASYNC|SND_FILENAME|SND_LOOP);
+                        musica = 1;
+                    }else{ 
+                        PlaySound(TEXT("Songs/TitleTheme.wav"), NULL, SND_ASYNC|SND_FILENAME|SND_LOOP);
+                        musica = 0;
+                    }
+                }
+            }else {
+                if(wParam == VK_ESCAPE || wParam == VK_DELETE)    //Pressionou ESC
+                    PostQuitMessage(0);
+                return DefWindowProc(hwnd, uMsg, wParam, lParam);
+            }
+
     return 0;
 }
 
@@ -211,26 +249,18 @@ void DisableOpenGL (HWND hwnd, HDC hDC, HGLRC hRC) {
 
 // Fun��o que desenha cada componente do jogo
 void desenhaJogo() {
+    descerBlocos(cen);
+    updateCristais(cen, gradee); 
     cenario_desenha(cen);
     pontuacao_desenha(gradee);
     maior_pontuacao_desenha(gradee);
-    tempo_desenha(tempo());
+    //tempo_desenha(tempo());
+    tempo_desenha(timer_congelado - startTimer);
     grade_desenha(gradee);
     grade_perdeu(gradee, cen);
-    if(grade_perdeu(gradee, cen) == 1) {
+    
+    if(grade_perdeu(gradee, cen) == 1 && pause == 0) {
 
-        //printf("cenario desenhado!\n");
-
-        //printf("pontuacao desenhado!\n");
-
-        //printf("maior pontuacao desenhado!\n");
-
-        //printf("tempo desenhado!\n");
-        updateCristais(cen, gradee);
-        //printf("cristais atualizados!\n");
-
-        //printf("grade desenhada!\n");
-        //printf("desenha jogo finalizado!\n");
     }
 
 }

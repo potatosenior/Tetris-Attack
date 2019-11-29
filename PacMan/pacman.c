@@ -333,13 +333,6 @@ Cenario* cenario_carrega() {
             cen->mapa[i][j] = num;
         }
 
-    for(i=0; i< L; i++){
-        for(j=0; j < C; j++){
-            printf("mapa[%i][%i] = %d ", i, j, cen->mapa[i][j]);
-        }
-        printf("\n");
-    }
-
         printf("cenario carregado!\n");
     return cen;
 }
@@ -360,11 +353,11 @@ void cenario_desenha(Cenario* cen) {
 
     for(i=0; i<L; i++){
         for(j=0; j<C; j++) {
-            if(cen->mapa[i][j] != preto){
+            if(cen->mapa[i][j] != preto && i != 0 && i != 1){
                 desenhaSprite(MAT2X(j+espaco),MAT2Y(i+vertical),cristais[cen->mapa[i][j]]);
-                espaco += espacos+0.14;
+                
             }
-
+        espaco += espacos+0.14;
         }
     espaco = 0.0;
     vertical += espacos+0.14;
@@ -446,10 +439,10 @@ void adicionar_linha(Cenario *cen, StructGrade *gradee){
         for(int j = 0; j < 6; ++j){
             int cristal = cen->mapa[i][j];
 
-            if(cristal != preto && i == 14) {
+            //if(cristal != preto && i == 14) {
                 //grade_morre(gradee);
-                continue;
-            }
+            //    continue;
+            //}
 
             if(cristal == -1) continue;
             cen->mapa[i-1][j] = cristal;
@@ -467,13 +460,30 @@ void adicionar_linha(Cenario *cen, StructGrade *gradee){
     printf("linha adicionada!\n");
 }
 
+void descerBlocos(Cenario *cen){
+    int cristal;
+
+        for(int i = 1; i < 13; i++){ // linhas
+            for(int j = 0; j < 6; j++){ //colunas
+                cristal = cen->mapa[i][j];
+                if(cristal == preto)
+                    continue;
+
+                if(cen->mapa[i+1][j] == preto){
+                    cen->mapa[i+1][j] = cristal;
+                    cen->mapa[i][j] = preto;
+                }
+            }
+        }
+}
+
 
 void updateCristais(Cenario *cen, StructGrade *gradee){
-    int sequencia, sequencia_c;
+    int sequencia, sequencia_h;
     //printf("funcao updateCristais!\n");
 
     //vertical - linha
-    for(int i = 1; i < 11; i++){ // linhas
+    for(int i = 1; i < 12; i++){ // linhas
         for(int j = 0; j < 6; j++){ //colunas
             if(cen->mapa[i][j] == preto){
                 continue;
@@ -485,53 +495,37 @@ void updateCristais(Cenario *cen, StructGrade *gradee){
             }
 
             if(sequencia >= 3){
-
-                if(sequencia == 3){
-                    Alterar_score(gradee, 50);
-                }
-                else if(sequencia == 4){
-                    Alterar_score(gradee, 100);
-                }
-                else if(sequencia == 5){
-                    Alterar_score(gradee, 150);
-                }
-                else if(sequencia == 6){
-                    Alterar_score(gradee, 200);
-                }
-                for(int k = i; k < (j+sequencia); k++){
+                Alterar_score(gradee,(sequencia-2)*50);
+                //printf("vertical sequencia = %d - j = %d, j + seq = %d ", sequencia, j, j+sequencia);
+                for(int k = i; k < (i+sequencia); k++){
                     cen->mapa[k][j] = preto;
+                    //printf("cristal[%i][%i] recebe preto!(j+seq = %d)\n", k, j, j+sequencia);
                 }
-                //printf("Fez ponto vertical!\n");
+                printf("Fez %d pontos vertical!\n", (sequencia-2)*50);
             }
         }
     }
     //horizontal - coluna
-    for(int i = 1; i < 13; i++){ // linhas
+    for(int i = 1; i < 14; i++){ // linhas
         for(int j = 0; j < 4; j++){ //colunas
-            sequencia_c = 1;
-
-            while(cen->mapa[i][j+sequencia_c] == cen->mapa[i][j]){
-                sequencia_c++;
+            if(cen->mapa[i][j] == preto){
+                continue;
             }
 
-            if(sequencia_c >= 3){
-                if(sequencia_c == 3){
-                    Alterar_score(gradee, 50);
-                }
-                else if(sequencia_c == 4){
-                    Alterar_score(gradee, 100);
-                }
-                else if(sequencia_c == 5){
-                    Alterar_score(gradee, 150);
-                }
-                else if(sequencia_c == 6){
-                    Alterar_score(gradee, 200);
-                }
+            sequencia_h = 1;
 
-                for(int k = i; k < (j+sequencia_c); k++){
+            while(cen->mapa[i][j+sequencia_h] == cen->mapa[i][j]){
+                sequencia_h++;
+            }
+
+            if(sequencia_h >= 3){
+                Alterar_score(gradee,(sequencia_h-2)*50);
+
+                for(int k = j; k < (j+sequencia_h); k++){
                     cen->mapa[i][k] = preto;
+                    //printf("horizontal cristal[%i][%i] recebe preto!\n", i, k);
                 }
-                //printf("Fez ponto horizontal!\n");
+                printf("Fez %d pontos horizontal!\n", (sequencia_h-2)*50);
             }
         }
     }
@@ -624,7 +618,7 @@ void Carregar_high_score(StructGrade *gradee){
 // Verifica se o jogador ja perdeu
 int grade_perdeu(StructGrade *gradee, Cenario *cen) {
     for(int i = 0; i < 6; i++)
-        if(cen->mapa[0][i] != preto ){
+        if(cen->mapa[1][i] != preto ){
             //printf("mapa[0][%i] = %d\n", i, cen->mapa[0][i]);
             grade_morre(gradee);
         }

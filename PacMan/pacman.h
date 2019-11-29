@@ -16,6 +16,7 @@ void pontuacao_desenha(StructGrade *gradee);
 
 //=======================FUNCOES===========================
 void adicionar_linha(Cenario *cen, StructGrade *gradee);
+void descerBlocos(Cenario *cen);
 void updateCristais(Cenario *cen, StructGrade *gradee);
 void Salvar_high_score(StructGrade *gradee);
 void Carregar_high_score(StructGrade *gradee);
