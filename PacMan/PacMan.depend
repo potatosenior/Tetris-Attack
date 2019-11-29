@@ -108,7 +108,7 @@
 
 1548166762 d:\andre\facom ufu\exemplos\pacman\pacman.h
 
-1574910635 source:c:\users\joao\desktop\pacman\main.c
+1574960624 source:c:\users\joao\desktop\pacman\main.c
 	"SOIL.h"
 	<windows.h>
 	<gl/gl.h>
@@ -116,11 +116,33 @@
 	<time.h>
 	"pacman.h"
 
-1215461608 c:\users\joao\desktop\pacman\soil.h
+1574913958 c:\users\joao\desktop\pacman\soil.h
 
-1574912566 c:\users\joao\desktop\pacman\pacman.h
+1574959682 c:\users\joao\desktop\pacman\pacman.h
 
-1574912610 source:c:\users\joao\desktop\pacman\pacman.c
+1574964234 source:c:\users\joao\desktop\pacman\pacman.c
+	<stdio.h>
+	<math.h>
+	<stdlib.h>
+	<windows.h>
+	<gl/gl.h>
+	<time.h>
+	"SOIL.h"
+	"pacman.h"
+
+1574942083 source:c:\users\marco antonio\desktop\pacman\main.c
+	"SOIL.h"
+	<windows.h>
+	<gl/gl.h>
+	<stdio.h>
+	<time.h>
+	"pacman.h"
+
+1574913958 c:\users\marco antonio\desktop\pacman\soil.h
+
+1574913958 c:\users\marco antonio\desktop\pacman\pacman.h
+
+1574944026 source:c:\users\marco antonio\desktop\pacman\pacman.c
 	<stdio.h>
 	<math.h>
 	<stdlib.h>
