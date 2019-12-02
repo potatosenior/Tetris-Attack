@@ -130,7 +130,7 @@
 	"SOIL.h"
 	"pacman.h"
 
-1574942083 source:c:\users\marco antonio\desktop\pacman\main.c
+1575287853 source:c:\users\marco antonio\desktop\pacman\main.c
 	"SOIL.h"
 	<windows.h>
 	<gl/gl.h>
@@ -138,11 +138,11 @@
 	<time.h>
 	"pacman.h"
 
-1574913958 c:\users\marco antonio\desktop\pacman\soil.h
+1575287853 c:\users\marco antonio\desktop\pacman\soil.h
 
-1574913958 c:\users\marco antonio\desktop\pacman\pacman.h
+1575287853 c:\users\marco antonio\desktop\pacman\pacman.h
 
-1574944026 source:c:\users\marco antonio\desktop\pacman\pacman.c
+1575287853 source:c:\users\marco antonio\desktop\pacman\pacman.c
 	<stdio.h>
 	<math.h>
 	<stdlib.h>

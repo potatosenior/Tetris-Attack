@@ -28,7 +28,7 @@ int reiniciar_pag = 1;//qual opcao vai escolhre, 1-reiniciar,2-sair
 int musica = 0; //variavel pra pausar a musica | 0 - tocando | 1 - pausada
 int pause = 0;  //variavel pra pausar o jogo
 int konamiEasterEgg = 0; // Easter Egg, ao atingir 10 � ativado!
-time_t lastTimer, actualTimer, startTimer = 0, auxTimer, timer_congelado;
+time_t lastTimer, actualTimer, startTimer = 0, auxTimer = 0, timer_congelado;
 
 void desenhaJogo();
 void iniciaJogo();
@@ -289,6 +289,7 @@ void desenhaJogo() {
         if(grade_perdeu(gradee, cen) == 1) {    //nao perdeu
             if(pause == 1){         //jogo pausado
                 cenario_desenha(cen);
+                grade_desenha(gradee);
                 pontuacao_desenha(gradee);
                 maior_pontuacao_desenha(gradee);
                 tempo_desenha(timer_congelado - startTimer);
@@ -308,7 +309,7 @@ void desenhaJogo() {
             maior_pontuacao_desenha(gradee);
             tempo_desenha(timer_congelado - startTimer);
             pagFinal_desenha(reiniciar_pag);
-        }     
+        }
     }
 
 }
@@ -348,11 +349,11 @@ void reiniciaJogo(){
 void atualizarTempo(){
     actualTimer = time(NULL);
     if(actualTimer - lastTimer == TEMPO_SUBIR){ // Timer para adicionar uma nova linha
-        if(grade_perdeu(gradee, cen) == 1 && pause == 0)
+        if(grade_perdeu(gradee, cen) == 1 && pause == 0)    //nao perdeu e nao esta pausado
             adicionar_linha(cen, gradee);
             lastTimer = time(NULL);
         }
-    if(grade_perdeu(gradee, cen) == 1 && pause == 0)
+    if(grade_perdeu(gradee, cen) == 1 && pause == 0)        //nao perdeu e nao esta pausado
         timer_congelado = time(NULL);
 }
 
