@@ -1,9 +1,9 @@
 /*
 Grupo JKL
 Integrantes:
-João Pedro de Oliveira Martins - 11921BCC017
-Kaio Augusto de Souza - matrícula
-Luis Gustavo Seiji Tateish - matrícula
+João Pedro de Oliveira Martins - 11921bcc017
+Kaio Augusto de Souza - 11921bcc040
+Luis Gustavo Seiji Tateishi - 11921bcc034
 */
 #include "SOIL.h"
 #include <windows.h>
@@ -19,14 +19,16 @@ LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
 void EnableOpenGL(HWND hwnd, HDC*, HGLRC*);
 void DisableOpenGL(HWND, HDC, HGLRC);
 
-// Define as vari�veis e fun��es que ir�o controlar o jogo
+// Define as variaveis e funcoes que irao controlar o jogo
 Cenario *cen;
 StructGrade *gradee;
 
+int iniciar = 0;//variavel pra definir quando iniciar o jogo
+int reiniciar_pag = 1;//qual opcao vai escolhre, 1-reiniciar,2-sair
 int musica = 0; //variavel pra pausar a musica | 0 - tocando | 1 - pausada
 int pause = 0;  //variavel pra pausar o jogo
 int konamiEasterEgg = 0; // Easter Egg, ao atingir 10 � ativado!
-time_t lastTimer, actualTimer, startTimer, auxTimer, timer_congelado;
+time_t lastTimer, actualTimer, startTimer = 0, auxTimer, timer_congelado;
 
 void desenhaJogo();
 void iniciaJogo();
@@ -35,11 +37,12 @@ void desenhaFundo();
 void desenhaPlacar();
 void desenhaMaiorPlacar();
 void maior_pontuacao_desenha();
+void atualizarTempo();
 void updateEasterEgg();
-int tempo();
 void updateCristais();
+void reiniciaJogo();
 
-//fun�ao que cria e configura a janela de desenho OpenGL
+//funcao que cria e configura a janela de desenho OpenGL
 int WINAPI WinMain(HINSTANCE hInstance,
                    HINSTANCE hPrevInstance,
                    LPSTR lpCmdLine,
@@ -89,10 +92,10 @@ int WINAPI WinMain(HINSTANCE hInstance,
     /* enable OpenGL for the window */
     EnableOpenGL(hwnd, &hDC, &hRC);
 
-    // Chama a fun��o que inicializa o jogo
+    // Chama a funcao que inicializa o jogo
     iniciaJogo();
-    startTimer = time(NULL);
-    lastTimer = time(NULL);
+    //startTimer = time(NULL);
+    //lastTimer = time(NULL);
 
     /* program main loop */
     while (!bQuit) {
@@ -106,13 +109,23 @@ int WINAPI WinMain(HINSTANCE hInstance,
                 DispatchMessage(&msg);
             }
         } else {
+            Sleep(100);
             /* OpenGL animation code goes here */
 
             glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 
             glPushMatrix();
-            // Esse la�o controla cada frame do jogo.
+            // Esse laco controla cada frame do jogo.
+
+            //printf("iniciar = %d, startTimer = %d\n", iniciar, startTimer);
+            if(iniciar != 0 && startTimer == 0){
+                startTimer = time(NULL);
+                lastTimer = time(NULL);
+                printf("Cronometro inciado!\n");
+            }
+
+            atualizarTempo();
 
             // Desenhar o jogo aqui
             desenhaJogo();
@@ -121,19 +134,9 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
             SwapBuffers(hDC);
         }
-        actualTimer = time(NULL);
-        //printf("Actual timer - last timer -> %d - %d = %d\n", actualTimer, lastTimer, actualTimer-lastTimer);
-        if(actualTimer - lastTimer == TEMPO_SUBIR){ // Timer para adicionar uma nova linha
-            //printf("valor de pause = %d - ", pause);
-            if(grade_perdeu(gradee, cen) == 1 && pause == 0)
-                adicionar_linha(cen, gradee);
-            lastTimer = time(NULL);
-        }
-        if(grade_perdeu(gradee, cen) == 1 && pause == 0)
-            timer_congelado = time(NULL);
     }
-    // Saiu do la�o que desenha os frames?
-    // Ent�o o jogo acabou.
+    // Saiu do laco que desenha os frames?
+    // Entao o jogo acabou.
     terminaJogo();
 
     /* shutdown OpenGL */
@@ -146,16 +149,19 @@ int WINAPI WinMain(HINSTANCE hInstance,
     return msg.wParam;
 }
 
-// Fun��o que verifica se o teclado foi pressionado
+// Funcao que verifica se o teclado foi pressionado
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-    if(uMsg == WM_CLOSE) 
+    if(uMsg == WM_CLOSE)
         PostQuitMessage(0);
-    else 
-        if(uMsg == WM_DESTROY) 
+    else
+        if(uMsg == WM_DESTROY)
             return 0;
-        else 
+        else
             if(uMsg == WM_KEYDOWN && grade_perdeu(gradee, cen) == 1){
-                if(wParam == VK_ESCAPE || wParam == VK_DELETE){    //Pressionou ESC
+                if(iniciar == 0){   //inicar o jogo
+                    iniciar = 1;
+                    printf("Pressionou para iniciar!\n");
+                }else if(wParam == VK_ESCAPE){    //Pressionou ESC
                     PostQuitMessage(0);
                 }else if(wParam == 0x50){   //Pressionou P e pausa/despausa o jogo
                     if(pause == 0){
@@ -180,19 +186,43 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     if(pause == 0)
                     grade_mudar(cen, gradee);
                 }else if(wParam == VK_CONTROL){
-                    Alterar_score(gradee, 150); Alterar_high_score_grade(gradee, 150);
+                    adicionar_linha(cen, gradee);
+                    //Alterar_score(gradee, 150); Alterar_high_score_grade(gradee, 150);
                 }else if(wParam == 0x4D){
-                    if(musica == 0){ 
+                    if(musica == 0){
                         PlaySound(NULL, NULL, SND_ASYNC|SND_FILENAME|SND_LOOP);
                         musica = 1;
-                    }else{ 
+                    }else{
                         PlaySound(TEXT("Songs/TitleTheme.wav"), NULL, SND_ASYNC|SND_FILENAME|SND_LOOP);
                         musica = 0;
                     }
                 }
-            }else {
-                if(wParam == VK_ESCAPE || wParam == VK_DELETE)    //Pressionou ESC
+                updateEasterEgg(wParam);
+            }else { //verifica se apertou pra sair mesmo se o jogo estiver pausado ou se o jogador perdeu
+                if(wParam == VK_ESCAPE)    //Pressionou ESC
                     PostQuitMessage(0);
+                if(wParam == VK_UP || wParam == 0x57){      //escolhe a opcao
+                    if(grade_perdeu(gradee, cen) == 0)
+                        if(reiniciar_pag == 2)
+                            reiniciar_pag = 1;
+                }
+                if(wParam == VK_DOWN || wParam == 0x53){    //escolhe a opcao
+                    if(grade_perdeu(gradee, cen) == 0)
+                        if(reiniciar_pag == 1)
+                            reiniciar_pag = 2;
+                }
+                if(wParam == VK_RETURN || wParam == VK_SPACE){  //seleciona a opcao
+                    if(grade_perdeu(gradee, cen) == 0){
+                        if(reiniciar_pag == 2){     //sair do jogo
+                            terminaJogo();
+                            PostQuitMessage(0);
+                        }else{                  //reiniciar o jogo
+                            printf("-----------------\nreiniciar o jogo!\n---------------\n");
+                            reiniciaJogo();
+                        }
+                    }
+                }
+
                 return DefWindowProc(hwnd, uMsg, wParam, lParam);
             }
 
@@ -244,27 +274,45 @@ void DisableOpenGL (HWND hwnd, HDC hDC, HGLRC hRC) {
 }
 
 // ===================================================================
-// Fun��es que controlam e desenham o jogo
+// Funcoes que controlam e desenham o jogo
 // ===================================================================
 
-// Fun��o que desenha cada componente do jogo
+// Funcao que desenha cada componente do jogo
 void desenhaJogo() {
-    descerBlocos(cen);
-    updateCristais(cen, gradee); 
-    cenario_desenha(cen);
-    pontuacao_desenha(gradee);
-    maior_pontuacao_desenha(gradee);
-    //tempo_desenha(tempo());
-    tempo_desenha(timer_congelado - startTimer);
-    grade_desenha(gradee);
-    grade_perdeu(gradee, cen);
-    
-    if(grade_perdeu(gradee, cen) == 1 && pause == 0) {
+    if(iniciar == 0){       //faz a tela inicial
+        cenario_desenha(cen);
+        pagInicial_desenha();
+    }else{
+        //verifica se o jogador perdeu
+        grade_perdeu(gradee, cen); //1 = nao perdeu, 0 = perdeu
 
+        if(grade_perdeu(gradee, cen) == 1) {    //nao perdeu
+            if(pause == 1){         //jogo pausado
+                cenario_desenha(cen);
+                pontuacao_desenha(gradee);
+                maior_pontuacao_desenha(gradee);
+                tempo_desenha(timer_congelado - startTimer);
+            }else{  //jogo nao pausado
+                descerBlocos(cen);
+                updateCristais(cen, gradee);
+                //desenha tudo
+                cenario_desenha(cen);
+                pontuacao_desenha(gradee);
+                maior_pontuacao_desenha(gradee);
+                tempo_desenha(timer_congelado - startTimer);
+                grade_desenha(gradee);
+            }
+        }else{         //perdeu
+            cenario_desenha(cen);
+            pontuacao_desenha(gradee);
+            maior_pontuacao_desenha(gradee);
+            tempo_desenha(timer_congelado - startTimer);
+            pagFinal_desenha(reiniciar_pag);
+        }     
     }
 
 }
-// Fun��o que inicia o mapa do jogo e as posi��es iniciais dos personagens
+// Funcao que inicia as variaveis do jogo
 void iniciaJogo() {
 
     gradee = criar_grade(2, 9);
@@ -274,24 +322,42 @@ void iniciaJogo() {
     PlaySound(TEXT("Songs/TitleTheme.wav"), NULL, SND_ASYNC|SND_FILENAME|SND_LOOP);
     printf("jogo iniciado!\n");
 }
-// Fun��o que libera os dados do jogo
+// Funcao que libera os dados do jogo
 void terminaJogo() {
     Salvar_high_score(gradee);
     cenario_destroy(cen);
     destruir_grade(gradee);
     printf("jogo terminado!");
 }
+//funcao que reinicia o jogo
+void reiniciaJogo(){
+    terminaJogo();
+    iniciar = 0;
+    reiniciar_pag = 1;
+    musica = 0;
+    pause = 0;
+    startTimer = 0;
+    lastTimer = 0;
+    iniciaJogo();
+    //printf("Variaveis reiniciadas:\niniciar = %d\nreiniciar_pag = %d\nstartTimer = %d\n", iniciar, reiniciar_pag, startTimer);
+}
 // ===================================================================
-// Fun�ao relogio
+// Funcao relogio
 // ===================================================================
 
-int tempo(){
-    auxTimer = time(NULL);
-    return auxTimer - startTimer;
+void atualizarTempo(){
+    actualTimer = time(NULL);
+    if(actualTimer - lastTimer == TEMPO_SUBIR){ // Timer para adicionar uma nova linha
+        if(grade_perdeu(gradee, cen) == 1 && pause == 0)
+            adicionar_linha(cen, gradee);
+            lastTimer = time(NULL);
+        }
+    if(grade_perdeu(gradee, cen) == 1 && pause == 0)
+        timer_congelado = time(NULL);
 }
 
 // ===================================================================
-// Fun��es easter egg
+// Funcoes easter egg
 // ===================================================================
 
 void updateEasterEgg(WPARAM key){

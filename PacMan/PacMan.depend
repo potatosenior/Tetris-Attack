@@ -108,7 +108,7 @@
 
 1548166762 d:\andre\facom ufu\exemplos\pacman\pacman.h
 
-1574960624 source:c:\users\joao\desktop\pacman\main.c
+1575217831 source:c:\users\joao\desktop\pacman\main.c
 	"SOIL.h"
 	<windows.h>
 	<gl/gl.h>
@@ -118,9 +118,9 @@
 
 1574913958 c:\users\joao\desktop\pacman\soil.h
 
-1574959682 c:\users\joao\desktop\pacman\pacman.h
+1575216813 c:\users\joao\desktop\pacman\pacman.h
 
-1574964234 source:c:\users\joao\desktop\pacman\pacman.c
+1575217339 source:c:\users\joao\desktop\pacman\pacman.c
 	<stdio.h>
 	<math.h>
 	<stdlib.h>

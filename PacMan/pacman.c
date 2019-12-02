@@ -9,7 +9,7 @@
 
 //=========================================================
 // Tamanho de cada bloco da matriz do jogo
-#define bloco 70
+//#define bloco 70
 
 // Tamanho da matriz do jogo
 #define preto -1
@@ -29,6 +29,10 @@
 
 #define TAMITV 0.10f             // tamanho da img do tempo vertical
 #define TAMITH 0.27f             // tamanho da img do tempo horizontalmente
+
+#define TAMICV 0.32f             // tamanho da img dos creditos vertical
+#define TAMICH 0.60f             // tamanho da img dos creditos horizontalmente
+
                 //0.5375f   0.57f   -0.1f
 #define centro 0.6855f           // alinhar matriz com o fundo horizontalmente
 #define centro_vertical 0.57f   // alinhar matriz com o fundo vertical
@@ -64,10 +68,10 @@ struct TCenario {
 //==============================================================
 
 GLuint grade;
-GLuint cristais[5];
+GLuint cristais[10];
 GLuint score[11];
 GLuint fundo;
-GLuint imagens[4];
+GLuint imagens[7];
 
 static void desenhaSprite(float coluna,float linha, GLuint tex);
 static GLuint carregaArqTextura(char *str);
@@ -84,7 +88,7 @@ void carregaTexturas() {
     grade = carregaArqTextura(".//Sprites//grade.png");
 
     // Cristais
-    for(i=0; i < 5; i++) {
+    for(i=0; i < 10; i++) {
         sprintf(str,".//Sprites//cristal%d.png",i);
         cristais[i] = carregaArqTextura(str);
     }
@@ -96,7 +100,7 @@ void carregaTexturas() {
     }
 
     // Imagens
-    for(i=0; i < 3; i++) {
+    for(i=0; i < 7; i++) {
         sprintf(str,".//Sprites//imagem%d.png",i);
         imagens[i] = carregaArqTextura(str);
     }
@@ -308,6 +312,75 @@ void desenhaImagemTempo(GLuint tex, float col){
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
 }
+
+void pagInicial_desenha(){
+    glColor3f(1.0, 1.0, 1.0);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, imagens[3]);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    float lin, col;
+    lin = -1;
+    col = -1;
+
+    glBegin(GL_QUADS);
+        glTexCoord2f(0.0f,0.0f); glVertex2f(col, lin);
+        glTexCoord2f(1.0f,0.0f); glVertex2f(col+TAMF, lin);
+        glTexCoord2f(1.0f,1.0f); glVertex2f(col+TAMF, lin+TAMF);
+        glTexCoord2f(0.0f,1.0f); glVertex2f(col, lin+TAMF);
+    glEnd();
+
+    glDisable(GL_BLEND);
+    glDisable(GL_TEXTURE_2D);
+}
+
+void pagFinal_desenha(int pag){
+    glColor3f(1.0, 1.0, 1.0);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, imagens[3+pag]);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    float lin, col;
+    lin = -1;
+    col = -1;
+
+    glBegin(GL_QUADS);
+        glTexCoord2f(0.0f,0.0f); glVertex2f(col, lin);
+        glTexCoord2f(1.0f,0.0f); glVertex2f(col+TAMF, lin);
+        glTexCoord2f(1.0f,1.0f); glVertex2f(col+TAMF, lin+TAMF);
+        glTexCoord2f(0.0f,1.0f); glVertex2f(col, lin+TAMF);
+    glEnd();
+
+    glDisable(GL_BLEND);
+    glDisable(GL_TEXTURE_2D);
+}
+
+void desenhaImagemCreditos(GLuint tex, float col){
+    glColor3f(1.0, 1.0, 1.0);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, tex);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    float lin;
+    lin = 0.38f;
+
+    glBegin(GL_QUADS);
+        glTexCoord2f(0.0f,0.0f); glVertex2f(col, lin);
+        glTexCoord2f(1.0f,0.0f); glVertex2f(col+TAMICH, lin);
+        glTexCoord2f(1.0f,1.0f); glVertex2f(col+TAMICH, lin+TAMICV);
+        glTexCoord2f(0.0f,1.0f); glVertex2f(col, lin+TAMICV);
+    glEnd();
+
+    glDisable(GL_BLEND);
+    glDisable(GL_TEXTURE_2D);
+}
+
 //==============================================================
 // Cenario
 //==============================================================
@@ -350,12 +423,16 @@ void cenario_desenha(Cenario* cen) {
     srand(time(NULL));
 
     desenhaFundo(fundo);
+    desenhaImagemCreditos(imagens[6], MAT2Y(5.0));
 
     for(i=0; i<L; i++){
         for(j=0; j<C; j++) {
             if(cen->mapa[i][j] != preto && i != 0 && i != 1){
                 desenhaSprite(MAT2X(j+espaco),MAT2Y(i+vertical),cristais[cen->mapa[i][j]]);
-                
+                if(cen->mapa[i][j] - 5 >= 0){//verifica se é um sprite de uma sequencia de pontos
+                    cen->mapa[i][j] = preto;
+                    //Sleep(250);
+                }
             }
         espaco += espacos+0.14;
         }
@@ -376,7 +453,7 @@ void pontuacao_desenha(StructGrade *gradee){
     {
         num[i] = numeros[i] - 48;
         //printf("num[%i] = %d\n", i, num[i]);
-        if(num[i]>=0){
+        if(num[i]>=0 && num[i] < 10){
             desenhaPlacar(score[num[i]],MAT2Y(espacamento), -0.15f);
             espacamento += 0.5;
         }
@@ -392,13 +469,7 @@ void maior_pontuacao_desenha(StructGrade *gradee){
     //printf("highscore = %d\n", pontuacao);
 
     itoa(pontuacao, numeros, 10);
-/*
-    num[4] = pontuacao / 10000; resto = pontuacao % 10000;
-    num[3] = resto / 1000; resto = resto % 1000;
-    num[2] = resto / 100; resto = resto % 100;
-    num[1] = resto / 10; resto = resto % 10;
-    num[0] = resto;
-*/
+
     for(int i = 4; i >= 0; i--)
     {
         num[i] = numeros[i] - 48;
@@ -418,7 +489,7 @@ void tempo_desenha(int temp){
     num[4] = (tempo % 60) % 10;     //segundos unidade
     num[3] = (tempo % 60) / 10;     //segundos dezena
     num[2] = 10;
-    num[1] = (tempo / 60);          //minutos unidade
+    num[1] = (tempo % 600 / 60);          //minutos unidade
     num[0] = (tempo / 600);         //minutos dezena
 
     float espacamento = 15.6;
@@ -457,6 +528,8 @@ void adicionar_linha(Cenario *cen, StructGrade *gradee){
             }
         cen->mapa[13][i] = num;
     }
+    if(gradee->y > 2)
+        gradee->y = gradee->y-1;
     printf("linha adicionada!\n");
 }
 
@@ -479,8 +552,7 @@ void descerBlocos(Cenario *cen){
 
 
 void updateCristais(Cenario *cen, StructGrade *gradee){
-    int sequencia, sequencia_h;
-    //printf("funcao updateCristais!\n");
+    int sequencia, sequencia_h, cristal;
 
     //vertical - linha
     for(int i = 1; i < 12; i++){ // linhas
@@ -488,20 +560,28 @@ void updateCristais(Cenario *cen, StructGrade *gradee){
             if(cen->mapa[i][j] == preto){
                 continue;
             }
+            cristal = cen->mapa[i][j];
 
             sequencia = 1;
-            while(cen->mapa[i+sequencia][j] == cen->mapa[i][j]){
-                sequencia++;
-            }
+                while(cen->mapa[i+sequencia][j] == cen->mapa[i][j]){
+                    sequencia++;
+                    if(i == 11 && sequencia >= 3)
+                        break;
+                }
 
             if(sequencia >= 3){
+                //if( (sequencia_h-2)*50 > 500)
+                //    break;
+                printf("sequencia de %d vertical!\n", sequencia);
+
                 Alterar_score(gradee,(sequencia-2)*50);
-                //printf("vertical sequencia = %d - j = %d, j + seq = %d ", sequencia, j, j+sequencia);
+
                 for(int k = i; k < (i+sequencia); k++){
-                    cen->mapa[k][j] = preto;
-                    //printf("cristal[%i][%i] recebe preto!(j+seq = %d)\n", k, j, j+sequencia);
+                    cen->mapa[k][j] = cristal+5;
+                    //printf("vertical cristal[%i][%i] recebe preto!\n", k, j);
                 }
                 printf("Fez %d pontos vertical!\n", (sequencia-2)*50);
+                //Sleep(10000);
             }
         }
     }
@@ -519,6 +599,10 @@ void updateCristais(Cenario *cen, StructGrade *gradee){
             }
 
             if(sequencia_h >= 3){
+                //if( (sequencia_h-2)*50 > 500)
+                //    break;
+                printf("sequencia de %d horizontal!\n", sequencia_h);
+
                 Alterar_score(gradee,(sequencia_h-2)*50);
 
                 for(int k = j; k < (j+sequencia_h); k++){
@@ -526,10 +610,10 @@ void updateCristais(Cenario *cen, StructGrade *gradee){
                     //printf("horizontal cristal[%i][%i] recebe preto!\n", i, k);
                 }
                 printf("Fez %d pontos horizontal!\n", (sequencia_h-2)*50);
+                //Sleep(10000);
             }
         }
-    }
-    //printf("fim da funcao updateCristais!\n");
+    }    
 }
 
 //==============================================================
@@ -571,7 +655,7 @@ void Salvar_high_score(StructGrade *gradee){
     FILE *f;
     int record, scoree;
 
-    scoree = gradee->highscore;
+    scoree = gradee->pontuacao;
 
     f = fopen("highscore.bin", "rb");
 
@@ -579,6 +663,7 @@ void Salvar_high_score(StructGrade *gradee){
         f = fopen("highscore.bin","w+b");
         fwrite(&scoree, sizeof(scoree), 1, f);
         fclose(f);
+        printf("Arquivo de highscore criado!\n");
     }
     else
     {

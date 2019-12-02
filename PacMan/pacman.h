@@ -13,6 +13,9 @@ void cenario_desenha(Cenario* cen);
 void pontuacao_desenha(StructGrade *gradee);
 void tempo_desenha(int temp);
 void pontuacao_desenha(StructGrade *gradee);
+void pagInicial_desenha();
+void pagFinal_desenha(int pag);
+void desenhaImagemCreditos(GLuint tex, float col);
 
 //=======================FUNCOES===========================
 void adicionar_linha(Cenario *cen, StructGrade *gradee);
