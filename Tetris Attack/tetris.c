@@ -5,7 +5,7 @@
 #include <gl/gl.h>
 #include <time.h>
 #include "SOIL.h"
-#include "pacman.h"
+#include "tetris.h"
 
 //=========================================================
 // Tamanho de cada bloco da matriz do jogo
@@ -356,8 +356,7 @@ void pontuacao_desenha(StructGrade *gradee){
     for(int i = 4; i >= 0; i--)
     {
         num[i] = numeros[i] - 48;
-        //printf("num[%i] = %d\n", i, num[i]);
-        if(num[i]>=0){
+        if(num[i]>=0 && num[i] < 10){
             desenhaPlacar(score[num[i]],MAT2Y(espacamento), -0.15f);
             espacamento += 0.5;
         }
@@ -366,11 +365,11 @@ void pontuacao_desenha(StructGrade *gradee){
 }
 
 void maior_pontuacao_desenha(StructGrade *gradee){
-    int num[5], pontuacao, resto;
+    int num[5], pontuacao;//, resto;
     char numeros[5];
     pontuacao = gradee->highscore;
     float espacamento = 5.0;
-    printf("highscore = %d\n", pontuacao);
+    //printf("highscore = %d\n", pontuacao);
 
     itoa(pontuacao, numeros, 10);
 /*
@@ -383,7 +382,7 @@ void maior_pontuacao_desenha(StructGrade *gradee){
     for(int i = 4; i >= 0; i--)
     {
         num[i] = numeros[i] - 48;
-        printf("num[%i] = %d\n", i, num[i]);
+        //printf("num[%i] = %d\n", i, num[i]);
         if(num[i]>=0){
             desenhaMaiorPlacar(score[num[i]],MAT2Y(espacamento), 0.15f);
             espacamento += 0.5;
@@ -392,14 +391,15 @@ void maior_pontuacao_desenha(StructGrade *gradee){
     desenhaImagemMaiorPlacar(imagens[0], MAT2Y(7.15));
 }
 
-void tempo_desenha(StructGrade *gradee, int temp){
+void tempo_desenha(int temp){
     int num[5], tempo;
     tempo = temp;
+    //printf("time = %d\n", tempo);
     num[4] = (tempo % 60) % 10;     //segundos unidade
     num[3] = (tempo % 60) / 10;     //segundos dezena
     num[2] = 10;
-    num[1] = (tempo % 60) / 10;     //minutos unidade
-    num[0] = (tempo % 60) / 60 / 10;//minutos dezena
+    num[1] = (tempo / 60);          //minutos unidade
+    num[0] = (tempo / 600);         //minutos dezena
 
     float espacamento = 15.6;
 
@@ -412,11 +412,57 @@ void tempo_desenha(StructGrade *gradee, int temp){
     }
     desenhaImagemTempo(imagens[2], MAT2Y(17.9));
 }
+
+//Adiciona uma linha e sobe as demais
+void adicionar_linha(Cenario *cen, StructGrade *gradee){
+    for(int i = 0; i < 14; ++i){
+        for(int j = 0; j < 6; ++j){
+            int cristal =  cen->mapa[i][j];
+            if(cristal != -1 && i == 14) {
+                grade_morre(gradee);
+                continue;
+            }
+
+            if(cristal == -1) continue;
+            cen->mapa[i-1][j] = cristal;
+        }
+    }
+
+    for(int i = 0; i < 6; ++i){
+        int num = rand() % 5;
+        cen->mapa[13][i] = num;
+    }
+}
+
+
+void updateCristais(Cenario *cen){
+    int sequencia = 1;
+    int inicial = -1;
+
+    for(int i = 0; i < 14; ++i){ // Verificação vertical
+        for(int j = 0; j < 6; ++j){
+            int cristal = cen->mapa[i][j];
+            int proxCristal = cen->mapa[i][j+1];
+            if(cristal == -1 || proxCristal == -1) continue;
+
+            if(proxCristal == cristal) sequencia++;
+            else sequencia = 1;
+            printf("%d -", sequencia);
+
+            if(sequencia >= 3){
+                inicial = j;
+            }
+
+            if(j == 6 && sequencia >= 3){
+                for(int j = 0; j < 6; ++j){
+                }
+            }
+        }
+    }
+}
 //==============================================================
 // Grade
 //==============================================================
-
-static void grade_morre(StructGrade *grade);
 
 //inicializa a grade
 StructGrade* criar_grade(int x, int y) {
@@ -432,8 +478,8 @@ StructGrade* criar_grade(int x, int y) {
 }
 
 //destruir a grade
-void destruir_grade(StructGrade *grade) {
-    free(grade);
+void destruir_grade(StructGrade *gradee) {
+    free(gradee);
 }
 
 // Alterar highscore da grade
@@ -494,8 +540,8 @@ void Carregar_high_score(StructGrade *gradee){
 }
 
 // Verifica se o jogador ja perdeu
-int grade_perdeu(StructGrade *grade) {
-    if (grade->status == 1) return 1;
+int grade_perdeu(StructGrade *gradee) {
+    if (gradee->status == 1) return 1;
     else return 0;
 }
 
@@ -509,19 +555,19 @@ void grade_mudar(Cenario *cen, StructGrade *gradee) {
 }
 
 // atualizar a posicao da grade
-void grade_movimenta(StructGrade *grade, Cenario *cen, int direcao) {
+void grade_movimenta(StructGrade *gradee, Cenario *cen, int direcao) {
     if(direcao == esquerda) {
-        if(grade->x - 1 < 0) return; //é fora da matriz
-        else grade->x -= 1;
+        if(gradee->x - 1 < 0) return; //é fora da matriz
+        else gradee->x -= 1;
     }else if(direcao == baixo) {
-        if(grade->y + 1 > 13) return; //é fora da matriz jogavel
-        else grade->y += 1;
+        if(gradee->y + 1 > 13) return; //é fora da matriz jogavel
+        else gradee->y += 1;
     }else if(direcao == direita) {
-        if(grade->x + 1 > 4) return; //é fora da matriz
-        else grade->x += 1;
+        if(gradee->x + 1 > 4) return; //é fora da matriz
+        else gradee->x += 1;
     }else if(direcao == cima) {
-        if(grade->y - 1 < 2) return;//é fora da matriz jogavel
-        else grade->y -= 1;
+        if(gradee->y - 1 < 2) return;//é fora da matriz jogavel
+        else gradee->y -= 1;
     }
 
 }
@@ -539,6 +585,6 @@ void grade_desenha(StructGrade *gradee) {
     }
 }
 
-void grade_morre(StructGrade *grade) {
-    if(grade->status == 1) grade->status = 0;
+void grade_morre(StructGrade *gradee) {
+    if(gradee->status == 1) gradee->status = 0;
 }
