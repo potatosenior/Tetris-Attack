@@ -31,10 +31,7 @@ void updateEasterEgg();
 int tempo();
 
 //fun�ao que cria e configura a janela de desenho OpenGL
-int WINAPI WinMain(HINSTANCE hInstance,
-                   HINSTANCE hPrevInstance,
                    LPSTR lpCmdLine,
-                   int nCmdShow) {
     WNDCLASSEX wcex;
     HWND hwnd;
     HDC hDC;
@@ -137,7 +134,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
     if(uMsg == WM_CLOSE) PostQuitMessage(0);
     else if(uMsg == WM_DESTROY) return 0;
     else if(uMsg == WM_KEYDOWN){
-        if(wParam == VK_ESCAPE || wParam == VK_DELETE){    //Pressionou ESC
+        updateEasterEgg(wParam);
+        if(wParam == VK_ESCAPE){
             PostQuitMessage(0);
         }else if(wParam == VK_LEFT || wParam == 0x41){
             grade_movimenta(gradee, cen, 0);
@@ -150,7 +148,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         }else if(wParam == VK_RETURN || wParam == VK_SPACE){
              grade_mudar(cen, gradee);
         }else if(wParam == VK_CONTROL){
-             Alterar_score(gradee, 150); Alterar_high_score_grade(gradee, 150);
+             Alterar_score(gradee, 150);
+             Alterar_high_score_grade(gradee, 150);
         }else if(wParam == 0x4D){
              if(musica) PlaySound(NULL, NULL, SND_ASYNC|SND_FILENAME|SND_LOOP);
              else PlaySound(TEXT("Songs/TitleTheme.wav"), NULL, SND_ASYNC|SND_FILENAME|SND_LOOP);
@@ -228,6 +227,7 @@ void iniciaJogo() {
     srand(time(NULL));
     cen = cenario_carrega();
     PlaySound(TEXT("Songs/TitleTheme.wav"), NULL, SND_ASYNC|SND_FILENAME|SND_LOOP);
+    printf("dasdsa");
 }
 // Fun��o que libera os dados do jogo
 void terminaJogo() {

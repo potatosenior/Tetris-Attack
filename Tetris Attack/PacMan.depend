@@ -151,7 +151,7 @@
 	"SOIL.h"
 	"tetris.h"
 
-1574709968 source:d:\kaioa\desktop\jogos\tetris attack\main.c
+1574799084 source:d:\kaioa\desktop\jogos\tetris attack\main.c
 	"SOIL.h"
 	<windows.h>
 	<gl/gl.h>
@@ -161,9 +161,9 @@
 
 1574694716 d:\kaioa\desktop\jogos\tetris attack\soil.h
 
-1574699940 d:\kaioa\desktop\jogos\tetris attack\tetris.h
+1574733316 d:\kaioa\desktop\jogos\tetris attack\pacman.h
 
-1574709911 source:d:\kaioa\desktop\jogos\tetris attack\tetris.c
+1574772981 source:d:\kaioa\desktop\jogos\tetris attack\pacman.c
 	<stdio.h>
 	<math.h>
 	<stdlib.h>
@@ -208,6 +208,18 @@
 1574740082 c:\users\marco antonio\desktop\tetris attack\tetris.h
 
 1574770467 source:c:\users\marco antonio\desktop\tetris attack\tetris.c
+	<stdio.h>
+	<math.h>
+	<stdlib.h>
+	<windows.h>
+	<gl/gl.h>
+	<time.h>
+	"SOIL.h"
+	"tetris.h"
+
+1574776889 d:\kaioa\desktop\jogos\tetris attack\tetris.h
+
+1574780310 source:d:\kaioa\desktop\jogos\tetris attack\tetris.c
 	<stdio.h>
 	<math.h>
 	<stdlib.h>

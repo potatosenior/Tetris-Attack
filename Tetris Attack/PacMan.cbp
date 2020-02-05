@@ -17,6 +17,7 @@
 				</Compiler>
 				<Linker>
 					<Add library="lib/libSOIL.a" />
+					<Add library="lib/libwinmm.a" />
 				</Linker>
 			</Target>
 			<Target title="Release">
@@ -44,10 +45,10 @@
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="pacman.c">
+		<Unit filename="tetris.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="pacman.h" />
+		<Unit filename="tetris.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />
